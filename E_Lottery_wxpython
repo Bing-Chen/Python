@@ -1,0 +1,202 @@
+#-------------------------------------------------------------------------------
+# Name:        module1
+# Purpose:
+#
+# Author:      ebigchn
+#
+# Created:     28/12/2016
+# Copyright:   (c) ebigchn 2016
+# Licence:     <your licence>
+#-------------------------------------------------------------------------------
+#write the names to files
+#first prize:3
+#second prize:6
+#third prize COM:2 IPM:2 PA:1 SDM:2 CPM:4 NPI:1 total:12
+#fourth prize COM:4 IPM:4 PA:3 SDM:4 CPM:12 NPI:3 total:30
+#self.nanmtemp is the name lottery choose
+#self.namelist is the final list will be printed on screen
+import  wx
+import random
+import os
+USE_GENERIC = 0
+if USE_GENERIC:
+    from wx.lib.stattext import GenStaticText as StaticText
+else:
+    StaticText = wx.StaticText
+filepath='C:\\temp\\lottery_list.txt'
+
+List_COM=['Li Liu','Lv Ming','Ming Lei','Lin Cong','Wenhui Zhang','Yao Sun','Ji Chengjun','Xuming Du','Yan Wang','Changhong Sun','Houjie Zhang','Bin Wang','Lingquan Li','Benqun Zhang','Hongquan Bi','Can Huang','Xin Na']
+List_IPM=['Teng Chao','Wang Huidong Donny','Hu Hui','Hua Baorui','Luo Kai','Wu Lidong','Wu Wei','Zhang Chuang','Feng Lei','Gu Yining','Song Yu','Wen Xiangwei','Xu Jiancheng','Shi Qixun','Wang Song','Zhang Lin Evan','Sophia Han']
+List_PA=['Li Le','Yushan Guo','Liu Meiling','Na Su','Dan Feng','Jing Chen','Fei Liu','Jia Gao','Tiantian Deng','Jinjing Wu','Shentong Liu']
+List_SDM=['Minghui Wang ','Yang Liu','Yue Meng','Hongbin Du','Qiang Zhao','Jin Wenjia','Nan Liu','Jianshu Dong','Yongtao Zhao','Yujia Sun','Huayuan Zhang','Xin Cai','Zhongxiao Gao','Mingyi Liu','Wensheng Wang','Xuefeng Cai']
+List_CPM=['Caifeng Yue','Guangji Li','Lu Xue','Shengjin Wu','Xiaofeng Li','Xin Zhang','Xuanda Gong','Yuexin Ma','Jia Li','Lihua Guan','Liu Fei ','Meng Wang','Shuguang Li','Tao Ning','Ying Zhao','Bin Gui','Dapeng Ni','Haiyun Xu','Jiong Zhang','Dongmei Jin','Tongjiang Zhang','Wei Zhang','Weiguang Li','Guoqiang Zhao','Haodong He','Lanye Wang','Lei Wang','Qi Chen','Sheng Zhang','Wu Shan','Xue Wang','Yu Sun','Chunhua An','Chunxue Wang','Haijing Qin','Jiahui Wang','Weijun Li','Wenjun Zhang','Xin Li','Yufeng Bao','Zhihong Du','Feng Wang','Jiang Zheng','Lan Wang','Liang Wu','Ming Gu','Shifa Wang','Xiaowei Guo','Yinxing Zhang']
+List_NPI=['Jun Ouyang','Bo Wei','Wang Neiwen','Wang Peng','Yan Jiangong','Zeng Wen','Xiaoxing Meng','Wen Yonghua','Meng Xu','Yuyi Wang']
+List_Total=List_COM+List_IPM+List_PA+List_SDM+List_CPM+List_NPI
+List_Final=[]
+
+class lottery:
+    def prize(self,name=[]):
+        self.name=name
+        self.Rdm_COM=random.randint(0,len(self.name)-1)
+        #print Rdm_COM
+        self.nametemp=self.name[self.Rdm_COM]
+        self.name.pop(self.Rdm_COM)
+        #print self.name[Rdm_COM]
+    def runlottery(self,n):
+        self.namelist=[] #final namelist
+##        print 'Please input the number you want:'
+    ##    Final_rdn.prize(List_COM)
+    ##    Final_rdn.prize(List_IPM)
+    ##    Final_rdn.prize(List_PA)
+    ##    Final_rdn.prize(List_SDM)
+    ##    Final_rdn.prize(List_CPM)
+    ##    Final_rdn.prize(List_NPI)
+    ##    Final_rdn.prize(List_NPI)
+        if os.path.exists(filepath): #run the program first time
+            f=open(filepath)
+            line=f.readline()
+            #print line
+            List_Final=line.split(',')
+            del List_Final[len(List_Final)-1] #remove the empty value
+            f.close
+        else:
+            List_Final=List_Total
+        for i in range(0,n):
+            self.prize(List_Final)
+            self.namelist.append(self.nametemp)
+##            if  self.namelist!='':
+##                self.namelist=self.namelist+'\n'+self.nametemp
+##            else:
+##                self.namelist=self.nametemp
+        f=open(filepath,'w')
+        List_Final = [line+',' for line in List_Final] #exist 1 empty value
+        f.writelines(List_Final)
+    ##    for i in List_Final:
+    ##        if i!=List_Final[len(List_Final)]:
+    ##            f.write(i+',')    #write the list in file
+    ##        else:
+    ##            f.write(i)
+        f.close
+
+
+        #print List_Final
+
+
+#GUI window
+class MyFrame(wx.Frame,lottery):
+
+    def __init__(self, parent, id):
+        self.paths=''
+        wx.Frame.__init__(self, parent, id, 'Lottery', size=(1366,768))
+        self.text1=[] #use to clear the screen
+        #CreatPanel
+        self.panel = wx.Panel(self)
+
+        #Add Button on Panel
+        button = wx.Button(self.panel, label = 'Draw!', pos = (1000, 0), size = (100, 60))
+        button.SetFont(wx.Font(20, wx.SCRIPT, wx.NORMAL, wx.BOLD, False)) #Button font
+        button_reset=wx.Button(self.panel, label = 'Reset!', pos = (1150, 0), size = (100, 60),)
+##        text=wx.StaticText(self.panel, -1, "Happy\n\n\n\n""New\n\n\n\n""Year!\n", (1160, 70), (120, -1))
+##        text.SetBackgroundColour('Yellow')
+##        font = wx.Font(50, wx.DECORATIVE, wx.ITALIC, wx.NORMAL) #set the font
+##        text.SetFont(font)
+        jpg = wx.Image('C:\\Python27\\Bing_Code\\images\\E.jpg', wx.BITMAP_TYPE_JPEG).ConvertToBitmap()
+        inputjpg=wx.StaticBitmap(self.panel, -1, jpg, (1250, 600))
+        jpg1 = wx.Image('C:\\Python27\\Bing_Code\\images\\fu.jpg', wx.BITMAP_TYPE_JPEG).ConvertToBitmap()
+        inputjpg1=wx.StaticBitmap(self.panel, -1, jpg1, (1000, 20))
+        #Add BoxSizer
+        ButtonSizer=wx.BoxSizer(wx.HORIZONTAL)
+        ButtonSizer.Add(button, 0, wx.ALL|wx.ALIGN_RIGHT)
+        ButtonSizer.Add(button_reset, 0, wx.ALL|wx.ALIGN_RIGHT)
+        HbuttonSizer=wx.BoxSizer(wx.VERTICAL)
+        HbuttonSizer.Add(ButtonSizer,0,wx.ALIGN_RIGHT,20)
+        HbuttonSizer.Add(inputjpg1,0,wx.ALIGN_RIGHT,20)
+        self.panel.SetSizer(HbuttonSizer)
+
+        #Add Button Function
+        self.Bind(wx.EVT_BUTTON, self.OnButton, button)
+        self.Bind(wx.EVT_BUTTON, self.resetButton, button_reset)
+    def OnButton(self, event): #add the the function to chart
+        dlg = wx.TextEntryDialog( #lottery number
+                self, 'Please input the Number you want:',
+                'Input the Lottery Number!','',wx.OK)
+        if dlg.ShowModal() == wx.ID_OK:
+            self.lotterynumber=int(dlg.GetValue())
+        dlg.Destroy()
+        try:
+            if self.text1:
+                for text1 in self.text1:
+                    text1.Hide()   #hide the StaticText
+        except:
+            pass
+        self.runlottery(self.lotterynumber) #input the lottery number
+        self.show1 = wx.StaticText(self.panel, -1,"Congratulations:",(0,0),style=wx.TE_MULTILINE)
+        self.show1.SetBackgroundColour('Yellow')
+        self.show1.SetForegroundColour('Red')
+        self.show1.SetFont( wx.Font(50, wx.SWISS, wx.NORMAL, wx.BOLD, False))
+        vertical_F1=80
+        vertical_F2=80
+        for namelist_F in self.namelist:
+            if self.lotterynumber>3: #first/second prize
+                if self.namelist.index(namelist_F)%2==0: #dive the final output in two part of screen
+                    self.show2 = wx.StaticText(self.panel, -1,namelist_F,(0,vertical_F1),style=wx.TE_MULTILINE)
+                    #text.SetBackgroundColour('White')
+                    self.show2.SetForegroundColour('Blue')
+                    self.show2.SetFont(wx.Font(50, wx.DECORATIVE, wx.ITALIC, wx.NORMAL))
+                    vertical_F1=vertical_F1+80
+                    self.text1.append(self.show2)
+                else:
+                    self.show3 = wx.StaticText(self.panel, -1,namelist_F,(550,vertical_F2),style=wx.TE_MULTILINE)
+                    #text.SetBackgroundColour('White')
+                    self.show3.SetForegroundColour('Blue')
+                    self.show3.SetFont(wx.Font(50, wx.DECORATIVE, wx.ITALIC, wx.NORMAL)) #set the font
+                    vertical_F2=vertical_F2+80
+                    self.text1.append(self.show3)
+            elif self.lotterynumber>1:
+                    self.show2 = wx.StaticText(self.panel, -1,namelist_F,(0,vertical_F1),style=wx.TE_MULTILINE)
+                    #text.SetBackgroundColour('White')
+                    self.show2.SetForegroundColour('Blue')
+                    self.show2.SetFont(wx.Font(100, wx.DECORATIVE, wx.ITALIC, wx.NORMAL))
+                    vertical_F1=vertical_F1+150
+                    self.text1.append(self.show2)
+            else:
+                    self.show2 = wx.StaticText(self.panel, -1,namelist_F,(0,vertical_F1),style=wx.TE_MULTILINE)
+                    #text.SetBackgroundColour('White')
+                    self.show2.SetForegroundColour('Blue')
+                    self.show2.SetFont(wx.Font(150, wx.DECORATIVE, wx.ITALIC, wx.NORMAL))
+                    self.text1.append(self.show2)
+
+    def resetButton(self,event):
+        if os.path.exists('C:\\temp\\lottery_list.txt'):
+            os.remove('C:\\temp\\lottery_list.txt')
+            dlg = wx.MessageDialog(None, 'Reset Successfuly!',
+                               'RestLottery',
+                               wx.OK | wx.ICON_INFORMATION
+                               #wx.YES_NO | wx.NO_DEFAULT | wx.CANCEL | wx.ICON_INFORMATION
+                               )
+            dlg.ShowModal()
+            dlg.Destroy()
+        else:
+            dlg = wx.MessageDialog(None, 'The Lottery is new!',
+                               'NewLottery',
+                               wx.OK | wx.ICON_INFORMATION
+                               #wx.YES_NO | wx.NO_DEFAULT | wx.CANCEL | wx.ICON_INFORMATION
+                               )
+            dlg.ShowModal()
+            dlg.Destroy()
+    def OnCloseMe(self, event):
+        self.Close(True)
+
+    def OnCloseWindow(self, event):
+        self.Destroy()
+
+def main():
+    if not os.path.exists('C:\\temp'): #the path store the result
+        os.mkdir('C:\\temp')
+    app = wx.App(False)
+    frame = MyFrame(parent = None, id = -1)
+    frame.Show()
+    app.MainLoop()
+
+if __name__ == '__main__':
+    main()
