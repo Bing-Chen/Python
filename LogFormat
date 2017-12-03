@@ -1,0 +1,77 @@
+import fileinput
+import re
+import os
+import wx
+wildcard = "log file (*.log)|*.log|"     \
+            "All files (*.*)|*.*"
+##dlg = wx.FileDialog("Open paint file...",
+##    os.getcwd(),
+##    style = wx.OPEN,
+##    wildcard = wildcard)
+##if dlg.ShowModal() == wx.ID_OK:
+##    filename = dlg.GetPath()
+##    print filename
+
+
+class Format:
+    def __init__(self):
+        self.name=u'C:\\Python27\\Bing_Code\\QDHSS13FE03BER_Test.log'
+
+    def logformat(self,event): #choose the open filenames
+        pat = re.compile('Last login:') #hanle the lines
+        pat1=':'
+        Fname=''#output filename
+        flag=0
+        f=open(self.name)
+        for line in f:
+            m=pat.match(line)
+            if m:
+                if flag==0:
+                    temp=line.split()
+                    Fname=temp[6]+' '+temp[3]+' '+temp[4]+'_'+re.sub(pat1,'',temp[5])
+                    print Fname
+                    f1=open('C:\Python27\Bing_Code\%s.txt'%Fname,'w')
+                    flag=1
+                    f1.write(line)
+                    print line
+                else:
+                    f1.close()
+                    temp=line.split()
+                    Fname=temp[6]+' '+temp[3]+' '+temp[4]+'_'+re.sub(pat1,'',temp[5])
+                    print Fname
+                    f1=open('C:\Python27\Bing_Code\%s.txt'%Fname,'w')
+                    f1.write(line)
+                    print line
+            else:
+                 f1.write(line)
+
+        f.close()
+        f1.close()
+
+##def main():
+##    pass
+##if __name__ == '__main__':
+def OnButton(evt):
+    dlg = wx.FileDialog(
+        message="Choose a file",
+        defaultDir=os.getcwd(),
+        defaultFile="",
+        wildcard=wildcard,
+        style=wx.OPEN | wx.MULTIPLE | wx.CHANGE_DIR
+        )
+
+    # Show the dialog and retrieve the user response. If it is the OK response,
+    # process the data.
+    if dlg.ShowModal() == wx.ID_OK:
+        # This returns a Python list of files that were selected.
+        paths = dlg.GetPaths()
+    dlg.Destroy()
+
+test='C:\Python27\Bing_Code\QDHSS13FE03BER_Test.log'
+output=Format()
+app = wx.App()
+win = wx.Frame(None, title="Format Your Log!",size=(300,100))
+button = wx.Button(win, label="Go")
+button.Bind(wx.EVT_BUTTON, output.logformat)
+win.Show()
+app.MainLoop()
