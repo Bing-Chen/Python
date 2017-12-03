@@ -1,0 +1,114 @@
+def main():
+    pass
+
+if __name__ == '__main__':
+    main()
+import wx
+import os
+import re
+from wx.lib.wordwrap import wordwrap
+
+wildcard = "log file (*.log)|*.log|"     \
+            "All files (*.*)|*.*"
+
+class MyFrame(wx.Frame):
+
+    def __init__(self, parent, id):
+        self.paths=''
+        wx.Frame.__init__(self, parent, id, 'LogTrim!', size = (230, 100))
+        self.SetIcon(wx.Icon('C:\\Python27\\Bing_Code\\Ericsson.ico', wx.BITMAP_TYPE_ICO)) #set ico
+
+        #CreatPanel
+        panel = wx.Panel(self)
+
+        #Add Button on Panel
+        button = wx.Button(panel, label = 'Run!', pos = (0, 0), size = (100, 50))
+        buttoninfo=wx.Button(panel,label='How to use',pos=(100,0),size=(100,50))
+        #Add Button Function
+        self.Bind(wx.EVT_BUTTON, self.OnButton, button)
+        self.Bind(wx.EVT_BUTTON,self.OnButtoninfo,buttoninfo)
+
+    def OnButtoninfo(self,event):
+        info = wx.AboutDialogInfo()
+        info.Name = "LogTrim"
+        info.Version = "1.0.0"
+        info.Copyright = "Copyright (C) 2016 by Bing Chen"
+        info.Description = wordwrap(
+            "A \"LogTrim\" program is a software help you to format your Tsp Based Logs\n "
+            "1.Click the LogTrim Button\n"
+            "2.Select the log you want to format"
+
+            "\n\nThe log must be Tsp platform Based "
+            "\nThe program will split the logs by date automaticly",
+            350, wx.ClientDC(self))
+        info.WebSite = ("http://tool-gsc-c.cn.ao.ericsson.se:8780/lighthouse/tool/list.action", "Ericsson GSC Innovation Program")
+        info.Developers = [ "Bing Chen"]
+        wx.AboutBox(info)
+
+    def logformat(self): #choose the open filenames
+        pat = re.compile('Last login:') #hanle the lines
+        pat1=':'
+        Fname=''#output filename
+        flag=0
+        f=open(self.paths[0])
+        self.foutput=self.paths[0].replace(self.paths[0].split('\\')[-1],'')
+        for line in f:
+            m=pat.match(line)
+            if m:
+                if flag==0:
+                    temp=line.split()
+                    Fname=temp[6]+' '+temp[3]+' '+temp[4]+'_'+re.sub(pat1,'',temp[5])
+                    print Fname
+                    f1=open(self.foutput+'\%s.txt'%Fname,'w')
+                    flag=1
+                    f1.write(line)
+                    print line
+                else:
+                    f1.close()
+                    temp=line.split()
+                    Fname=temp[6]+' '+temp[3]+' '+temp[4]+'_'+re.sub(pat1,'',temp[5])
+                    print Fname
+                    f1=open(self.foutput+'\%s.txt'%Fname,'w')
+                    f1.write(line)
+                    print line
+            else:
+                 f1.write(line)
+
+        f.close()
+        f1.close()
+
+    def OnButton(self, event):
+
+        dlg = wx.FileDialog(
+            self, message="Choose a file",
+            defaultDir=os.getcwd(),
+            defaultFile="",
+            wildcard=wildcard,
+            style=wx.OPEN | wx.MULTIPLE | wx.CHANGE_DIR
+            )
+
+        # Show the dialog and retrieve the user response. If it is the OK response,
+        # process the data.
+        if dlg.ShowModal() == wx.ID_OK:
+            # This returns a Python list of files that were selected.
+            self.paths = dlg.GetPaths()
+            self.logformat()
+        dlg.Destroy()
+        dlg1 = wx.MessageDialog(self, 'Please find the output in %s!'%self.foutput,
+                               'WellDone!',
+                               wx.OK | wx.ICON_INFORMATION
+                               #wx.YES_NO | wx.NO_DEFAULT | wx.CANCEL | wx.ICON_INFORMATION
+                               )
+        dlg1.ShowModal()
+        dlg1.Destroy()
+
+    def OnCloseMe(self, event):
+        self.Close(True)
+    def OnCloseWindow(self, event):
+        self.Destroy()
+
+if __name__ == '__main__':
+    app = wx.App(False)
+    frame = MyFrame(parent = None, id = -1)
+    frame.Show()
+    app.MainLoop()
